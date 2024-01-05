@@ -40,29 +40,34 @@ def generate_word_files():
 
     df = pd.read_excel(input_excel_file)
 
-    for index, row in df.iterrows():
-        doc = Document(template_word_file)
+    for i in range(0, len(df), 2):
+        if i + 1 < len(df):
+            doc = Document(template_word_file)
 
-        for para in doc.paragraphs:
-            para.text = para.text.replace("{Account_Number}", str(row["Лиц. счет"]))
-            para.text = para.text.replace("{Address}", str(row["Адрес"]))
-            para.text = para.text.replace("{Debt_Amount}", str(row["Сумма долга"]))
+            for j in range(2):
+                row = df.iloc[i + j]
 
-            if "{Status_date}" in para.text:
-                status_date_str = status_date_calendar.get_date()
-                para.text = para.text.replace("{Status_date}", status_date_str)
+                for para in doc.paragraphs:
+                    para.text = para.text.replace(f"{{Account_Number_{j + 1}}}", str(row["Лиц. счет"]))
+                    para.text = para.text.replace(f"{{Address_{j + 1}}}", str(row["Адрес"]))
+                    para.text = para.text.replace(f"{{Debt_Amount_{j + 1}}}", str(row["Сумма долга"]))
 
-        for para in doc.paragraphs:
-            for run in para.runs:
-                run.font.name = 'Times New Roman'
-                run.font.size = Pt(14)
+                    if "{Status_date}" in para.text:
+                        status_date_str = status_date_calendar.get_date()
+                        para.text = para.text.replace("{Status_date}", status_date_str)
 
-        for para in doc.paragraphs:
-            para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+                for para in doc.paragraphs:
+                    for run in para.runs:
+                        run.font.name = 'Times New Roman'
+                        run.font.size = Pt(14)
 
-        account_number = row["Лиц. счет"]
-        word_filename = os.path.join(output_folder, f'Повідомлення - {account_number}.docx')
-        doc.save(word_filename)
+                for para in doc.paragraphs:
+                    para.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
+
+            account_number_1 = df.iloc[i]["Лиц. счет"]
+            account_number_2 = df.iloc[i + 1]["Лиц. счет"]
+            word_filename = os.path.join(output_folder, f'Повідомлення - {account_number_1} і {account_number_2}.docx')
+            doc.save(word_filename)
 
     messagebox.showinfo("Готово", "Word файлы сохранены!")
 
@@ -74,7 +79,7 @@ def start_processing_thread():
 
 root = Tk()
 root.title("Генератор Word файлов")
-root.geometry("800x800")
+root.geometry("800x800")  # Устанавливаем размер окна
 
 input_label = Label(root, text="Выберите файл Excel:")
 input_label.pack(pady=(20, 5))
