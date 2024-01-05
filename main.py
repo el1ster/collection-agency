@@ -4,7 +4,7 @@ import pandas as pd
 from tkinter import *
 from tkinter import filedialog, messagebox
 from tkinter import ttk
-from tkcalendar import Calendar  # Импортируем библиотеку для выбора даты
+from tkcalendar import Calendar
 from docx import Document
 from docx.shared import Pt
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
@@ -48,7 +48,6 @@ def generate_word_files():
             para.text = para.text.replace("{Address}", str(row["Адрес"]))
             para.text = para.text.replace("{Debt_Amount}", str(row["Сумма долга"]))
 
-            # Заменяем плейсхолдер {Status_date} на выбранную дату
             if "{Status_date}" in para.text:
                 status_date_str = status_date_calendar.get_date()
                 para.text = para.text.replace("{Status_date}", status_date_str)
@@ -73,14 +72,12 @@ def start_processing_thread():
     processing_thread.start()
 
 
-# Создание окна
 root = Tk()
 root.title("Генератор Word файлов")
-root.geometry("800x800")  # Устанавливаем размер окна
+root.geometry("800x800")
 
-# Создание метки и поля для выбора файла Excel
 input_label = Label(root, text="Выберите файл Excel:")
-input_label.pack(pady=(20, 5))  # Устанавливаем вертикальное отступы
+input_label.pack(pady=(20, 5))
 
 input_path_entry = Entry(root, width=50)
 input_path_entry.pack()
@@ -88,7 +85,6 @@ input_path_entry.pack()
 browse_excel_button = ttk.Button(root, text="Обзор", command=browse_excel_file)
 browse_excel_button.pack(pady=(5, 10))
 
-# Создание метки и поля для выбора файла-шаблона Word
 template_label = Label(root, text="Выберите файл-шаблон Word:")
 template_label.pack()
 
@@ -98,14 +94,12 @@ template_path_entry.pack()
 browse_template_button = ttk.Button(root, text="Обзор", command=browse_word_template)
 browse_template_button.pack(pady=(5, 10))
 
-# Выбор даты
 status_date_label = Label(root, text="Выберите дату:")
 status_date_label.pack()
 
 status_date_calendar = Calendar(root)
 status_date_calendar.pack()
 
-# Кнопка для генерации Word файлов
 generate_button = ttk.Button(root, text="Создать Word файлы", command=start_processing_thread)
 generate_button.pack()
 
