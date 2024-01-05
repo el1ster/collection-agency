@@ -23,6 +23,12 @@ def browse_word_template():
     template_path_entry.insert(0, file_path)
 
 
+def browse_output_folder():
+    folder_path = filedialog.askdirectory()
+    output_folder_entry.delete(0, END)
+    output_folder_entry.insert(0, folder_path)
+
+
 def generate_word_files():
     input_excel_file = input_path_entry.get()
     if not input_excel_file:
@@ -34,8 +40,13 @@ def generate_word_files():
         messagebox.showerror("Ошибка", "Выберите файл-шаблон Word!")
         return
 
+    output_folder = output_folder_entry.get()
+    if not output_folder:
+        messagebox.showerror("Ошибка", "Выберите папку для сохранения файлов!")
+        return
+
     current_date = datetime.datetime.now().strftime('%d.%m.%y')
-    output_folder = os.path.join(os.getcwd(), current_date)
+    output_folder = os.path.join(output_folder, current_date)
     os.makedirs(output_folder, exist_ok=True)
 
     df = pd.read_excel(input_excel_file)
@@ -98,6 +109,15 @@ template_path_entry.pack()
 
 browse_template_button = ttk.Button(root, text="Обзор", command=browse_word_template)
 browse_template_button.pack(pady=(5, 10))
+
+output_folder_label = Label(root, text="Выберите папку для сохранения файлов:")
+output_folder_label.pack()
+
+output_folder_entry = Entry(root, width=50)
+output_folder_entry.pack()
+
+browse_output_folder_button = ttk.Button(root, text="Обзор", command=browse_output_folder)
+browse_output_folder_button.pack(pady=(5, 10))
 
 status_date_label = Label(root, text="Выберите дату:")
 status_date_label.pack()
